@@ -1,5 +1,6 @@
 D:\Angular\ui\dist\ui\browser   => this is the possible path where angular build path is created 
 
+==> run mvn install => mvn clean and then mvn install => after this command in spring boot target folder angular build file is created  
 
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
