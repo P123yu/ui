@@ -196,3 +196,22 @@ D:\Angular\ui\dist\ui\browser   => this is the possible path where angular build
         </plugins>
     </build>
 </project>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+${project.build.directory}: ===>   translates to   ===>  C:\Users\piyush_kumar\Downloads\test-ang\test-ang\target.
+
+<argument>${project.build.directory}/angular</argument>  ==> C:\Users\piyush_kumar\Downloads\test-ang\test-ang\target\angular
+
