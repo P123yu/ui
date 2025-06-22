@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -9,4 +10,21 @@ import { RouterOutlet } from '@angular/router';
 })
 export class App {
   protected title = 'ui';
+
+  message: string = '';
+
+  private http = inject(HttpClient);
+
+   ngOnInit(): void {
+    this.getMessage();
+    
+  }
+
+  // GET message from /get endpoint
+  getMessage(): void {
+    this.http.get('http://localhost:8080/get', { responseType: 'text' })
+      .subscribe(msg => {
+        this.message = msg;
+      });
+  }
 }
