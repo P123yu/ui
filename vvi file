@@ -215,3 +215,9 @@ ${project.build.directory}: ===>   translates to   ===>  C:\Users\piyush_kumar\D
 
 <argument>${project.build.directory}/angular</argument>  ==> C:\Users\piyush_kumar\Downloads\test-ang\test-ang\target\angular
 
+In a Maven pom.xml file, ${basedir} is a built-in Maven property that refers to the absolute path of the directory containing the current pom.xml file.
+
+${basedir} ===> C:\Users\piyush_kumar\Downloads\test-ang\test-ang\  
+
+C:\Users\piyush_kumar\Downloads\test-ang\test-ang\target\classes\static ===>  <outputDirectory>${basedir}/target/classes/static</outputDirectory>
+
