@@ -1,0 +1,197 @@
+D:\Angular\ui\dist\ui\browser   => this is the possible path where angular build path is created 
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.4.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>com.cms.ewds</groupId>
+    <artifactId>EwdsBackend</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>EwdsBackend</name>
+    <description>Admin Panel Backend For Ewds Project</description>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Boot Web Starter for building RESTful APIs -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Lombok for reducing boilerplate code (e.g., getters, setters) -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- SpringDoc OpenAPI Starter for automatic API documentation (Swagger UI) -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+
+        <!-- Spring Boot Starter Test for unit and integration testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--
+            Plugin: exec-maven-plugin
+            Purpose: To execute system commands, in this case, cloning the Angular project from Git.
+            Execution: Runs during the 'generate-sources' phase.
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>clone-angular-project</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>git</executable>
+                            <arguments>
+                                <argument>clone</argument>
+                                <argument>https://github.com/P123yu/ui.git</argument>
+                                <argument>${project.build.directory}/angular</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--
+            Plugin: frontend-maven-plugin
+            Purpose: To install Node.js and npm, and then build the Angular project.
+            Configuration: Specifies Node.js and npm versions, and the working directory for Angular project.
+            Executions:
+                - install node and npm: Downloads and sets up Node.js/npm.
+                - npm install: Installs Angular project dependencies.
+                - npm build: Builds the Angular application for production.
+            Execution Phase: All these run during the 'generate-resources' phase.
+            -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.15.0</version>
+                <configuration>
+                    <nodeVersion>v20.19.0</nodeVersion>
+                    <npmVersion>10.2.3</npmVersion>
+                    <workingDirectory>${project.build.directory}/angular</workingDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <arguments>install --legacy-peer-deps</arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>npm build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <arguments>run build -- --configuration=production</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--
+            Plugin: maven-resources-plugin
+            Purpose: To copy the built Angular static files into the Spring Boot's static resources directory.
+            Output Directory: The Angular build output will be copied to `target/classes/static`,
+                              which is where Spring Boot serves static content by default.
+            Execution Phase: Runs during the 'process-resources' phase.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <!-- No version needed here as it's typically managed by the parent POM -->
+                <executions>
+                    <execution>
+                        <id>copy-angular-build</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/static</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <!-- This line is the likely culprit! Adjust 'ui' if your project has a different name -->
+                                    <directory>${project.build.directory}/angular/dist/ui/browser</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--
+            Plugin: spring-boot-maven-plugin
+            Purpose: To package the application into an executable JAR/WAR.
+            Configuration: Excludes Lombok from the final package as it's a compile-time dependency.
+            -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
